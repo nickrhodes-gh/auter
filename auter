@@ -140,6 +140,9 @@ function rotate_file {
 
 function run_script {
   local phase="$1"
+  local uc_phase
+  uc_phase=$(tr 'a-z-' 'A-Z_' <<< "$phase" )
+
   if [[ "$SKIPALLSCRIPTS" -eq 0 ]]; then
     local skip=0
     # Check if the phase scripts have been skipped with --skip-scripts-by-phase
@@ -164,18 +167,18 @@ function run_script {
 
         if [[ "$rc" -ne 0 ]]; then
           logit "ERROR: $phase script $script exited with non-zero exit code $rc. Aborting auter run."
-          >>"$logfile" echo "STATUS:FAILED:$script:$rc"
+          >>"$logfile" echo "$uc_phase:FAILED:$script:$rc"
           ${EXIT_ON_SCRIPT_FAIL:=true} && quit 8
         else
-          >>"$logfile" echo "STATUS:SUCCESS:$script:$rc"
+          >>"$logfile" echo "$uc_phase:SUCCESS:$script:$rc"
         fi
       elif [[ -f "$script" ]]; then
         logit "ERROR: $phase script $script exists but the execute bit is not set. Skipping."
-        >>"$logfile" echo "STATUS:FAILED:$script:missing execute bit"
+        >>"$logfile" echo "$uc_phase:FAILED:$script:missing execute bit"
       fi
     else
-      logit "INFO: Skipping script $script"
-      >>"$logfile" echo "STATUS:INFO:$script:skipped"
+      logit "INFO: Skipping $phase script $script"
+      >>"$logfile" echo "$uc_phase:INFO:$script:skipped"
     fi
   else
     logit "INFO: The --skip-all-scripts flag was used. NOT executing $script as part of the $phase phase"
