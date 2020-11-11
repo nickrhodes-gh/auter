@@ -112,6 +112,7 @@ function logit() {
 
 function read_config() {
   if [[ -f "$CONFIGFILE" ]]; then
+    # shellcheck source=/etc/auter/auter.conf
     source "$CONFIGFILE"
   elif [[ "$CUSTOMCONFIG" ]]; then
     logit "ERROR: Custom config file $CONFIGFILE does not exist"
@@ -166,7 +167,7 @@ function run_script {
         rc=$?
 
         if [[ "$rc" -ne 0 ]]; then
-          logit "ERROR: $phase script $script exited with non-zero exit code $rc. Aborting auter run."
+          logit "ERROR: $phase script $script exited with non-zero exit code $rc.$(${EXIT_ON_SCRIPT_FAIL:=true} && echo ' Aborting auter run.')"
           >>"$logfile" echo "$uc_phase:FAILED:$script:$rc"
           ${EXIT_ON_SCRIPT_FAIL:=true} && quit 8
         else
