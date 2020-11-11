@@ -174,8 +174,8 @@ function run_script {
           >>"$logfile" echo "$uc_phase:SUCCESS:$script:$rc"
         fi
       elif [[ -f "$script" ]]; then
-        logit "ERROR: $phase script $script exists but the execute bit is not set. Skipping."
-        >>"$logfile" echo "$uc_phase:FAILED:$script:missing execute bit"
+        logit "WARNING: $phase script $script exists but the execute bit is not set. Skipping."
+        >>"$logfile" echo "$uc_phase:WARNING:$script:skipped - missing execute bit"
       fi
     else
       logit "INFO: Skipping $phase script $script"
